@@ -1,0 +1,241 @@
+{
+  "name": "My First AI Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "39b596c2-bd9c-4415-abc8-109829c95ff9",
+      "name": "When chat message received",
+      "webhookId": "a54424fe-cc0d-4601-90a0-cab29682f46c"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "You are a helpful assistant.\n\n#Rules\n-Respond in natural and friendly manner"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        304,
+        -16
+      ],
+      "id": "2ac7dd76-7551-4214-80a7-b1ee26461bfe",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolCalculator",
+      "typeVersion": 1,
+      "position": [
+        480,
+        288
+      ],
+      "id": "df98c78f-9f5a-447d-9447-cb1f3caca3a2",
+      "name": "Calculator"
+    },
+    {
+      "parameters": {
+        "model": "nomic-embed-text:latest"
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOllama",
+      "typeVersion": 1,
+      "position": [
+        672,
+        336
+      ],
+      "id": "2e8cc118-68b0-4368-be16-06be90357c06",
+      "name": "Embeddings Ollama",
+      "credentials": {
+        "ollamaApi": {
+          "id": "wkwHFT93Oti9jmaf",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "llama3.2:latest",
+          "mode": "list",
+          "cachedResultName": "llama3.2:latest"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        48,
+        192
+      ],
+      "id": "f6fdf8a6-2e26-4ac2-9d6f-f4d86401d0de",
+      "name": "Ollama",
+      "credentials": {
+        "openAiApi": {
+          "id": "rsNoIaOBsIO34QsN",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        192,
+        208
+      ],
+      "id": "5c22ae53-4d1d-406a-b3ea-88d26401c8f9",
+      "name": "Memory",
+      "credentials": {
+        "postgres": {
+          "id": "wWps4lf3hf7ffYbJ",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolSerpApi",
+      "typeVersion": 1,
+      "position": [
+        320,
+        256
+      ],
+      "id": "f70e24a5-02e9-4e70-9921-8cec31e7f798",
+      "name": "SerpAPI",
+      "credentials": {
+        "serpApi": {
+          "id": "sWI64McmzOdUkQLg",
+          "name": "SerpAPI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Use this tool to answer questions about uploaded documents.\nAlways pass the user question as the \"input\" field.\n",
+        "tableName": "n8n_tutorial",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePGVector",
+      "typeVersion": 1.3,
+      "position": [
+        688,
+        208
+      ],
+      "id": "1d7e3966-6f07-4a1e-9fdb-5946e6a99edd",
+      "name": "Knowledge base",
+      "credentials": {
+        "postgres": {
+          "id": "wWps4lf3hf7ffYbJ",
+          "name": "Postgres account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculator": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Ollama": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Knowledge base",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SerpAPI": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Knowledge base": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "0853cad8-fa80-4010-9baa-e4c62a8d7625",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "c0e782e0aa032f04915ffe4bc8d718e6dab784a0a443e29f5e24f5b52d708cf5"
+  },
+  "id": "EMwCjdtPFzkyq35y",
+  "tags": []
+}
