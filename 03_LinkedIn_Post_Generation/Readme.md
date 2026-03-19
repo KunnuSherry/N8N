@@ -106,13 +106,16 @@ Before you start, make sure you have:
 
 ---
 
-### Step 5 — Connect Your LinkedIn Account
+### Step 5 — Connect Your LinkedIn Account (Updated)
 
-1. Click the **Create a Post** node
-2. Under Credentials → click **Connect LinkedIn OAuth2**
-3. A browser popup will appear — log in and authorize
-4. Once connected, your LinkedIn name will appear in the node
-5. Update the `person` field with your **LinkedIn Person URN** if needed
+1. Set `App Name` to your product name, e.g., **Kunal AI Lab**.
+2. Create a LinkedIn Company Page, become **Super Admin**, and paste the page URL in the notes.
+3. Set the Privacy Policy link to:
+   `https://www.notion.so/Privacy-Policy-Kunal-AI-Lab-1ce6d589199d8060bf4de2b2a6cdbe5b?source=copy_link`
+4. Upload your app image (logo/screenshot).
+5. In product access, enable **Sign in with OAuth** and **Share On Linkedin**
+6. Add the redirect URL in Auth, e.g., `http://localhost:11434/callback` for Ollama (port 11434).
+7. Verify your organization details in settings (name and domain check).
 
 ---
 
