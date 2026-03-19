@@ -1,230 +1,193 @@
-# AI-Powered LinkedIn Auto-Posting Engine (n8n + Ollama + FLUX) — Step-by-Step Guide
+# 🚀 LinkedIn Auto-Poster — n8n Automation Workflow
 
-This README shows how to build an automation that takes a simple post idea, generates a complete LinkedIn post + an AI image, and publishes it automatically.
+> **Just type a post idea. AI writes it, illustrates it, and publishes it to LinkedIn — automatically.**
 
-The workflow uses:
-
-* n8n (workflow automation)
-* Ollama (local LLM for text + prompt generation)
-* FLUX 1.1 Schnell (image generation via Hugging Face)
-* LinkedIn API (publishing a post with an image)
+![n8n](https://img.shields.io/badge/n8n-Workflow-orange?style=flat-square)
+![Ollama](https://img.shields.io/badge/Ollama-Llama%203.2-purple?style=flat-square)
+![HuggingFace](https://img.shields.io/badge/HuggingFace-FLUX.1-teal?style=flat-square)
+![LinkedIn](https://img.shields.io/badge/LinkedIn-API-blue?style=flat-square)
 
 ---
 
-## Goal
+## 📌 What This Does
 
-Turn this:
+This n8n workflow automates your entire LinkedIn content pipeline:
 
-* An idea (one line)
-* Optional company/context description
+1. You enter a **post idea** in a simple chat interface
+2. **Llama 3.2** (running locally via Ollama) writes a professional, high-engagement LinkedIn post
+3. **FLUX.1-schnell** (via HuggingFace) generates a matching AI image
+4. The post + image is **automatically published** to your LinkedIn profile
 
-Into this:
-
-* A ready-to-post LinkedIn caption
-* A symbolic / corporate-style image generated from the post context
-* An auto-published LinkedIn post (text + image)
+No manual writing. No Canva. No copy-pasting. Just one idea → live post.
 
 ---
 
-## Final Workflow Structure
+## 🗺️ Workflow Architecture
 
 ```
-Trigger (Form/Webhook/Manual)
-  → Ollama (Generate LinkedIn post text)
-  → Ollama (Generate image prompt from post)
-  → HTTP Request (FLUX image generation → binary PNG)
-  → Merge (Combine JSON + Binary)
-  → LinkedIn (Create post with image)
-```
-
----
-
-## Architecture Overview
-
-### Data produced by the LLM nodes
-
-**Text generation output (example):**
-
-```json
-{
-  "content": "Generated LinkedIn post text..."
-}
-```
-
-**Image prompt generation output (example):**
-
-```json
-{
-  "image_prompt": "Minimalistic corporate visual representing... (no text in image)"
-}
+Chat Input
+    │
+    ▼
+Edit Fields (inject bio + post idea)
+    │
+    ├──────────────────────────────────┐
+    ▼                                  ▼
+Text Generation              Image Prompt Generation
+(Llama 3.2 via Ollama)       (Llama 3.2 via Ollama)
+    │                                  │
+    │                                  ▼
+    │                         Image Generator
+    │                         (FLUX.1 via HuggingFace)
+    │                                  │
+    └──────────────┬───────────────────┘
+                   ▼
+                 Merge
+                   │
+                   ▼
+           Create LinkedIn Post
+           (Text + Image published)
 ```
 
 ---
 
-## Tech Stack
+## ⚙️ Prerequisites
 
-| Component | Purpose |
-| --- | --- |
-| n8n | Workflow automation engine |
-| Ollama | Local LLM runtime for text + prompt generation |
-| FLUX 1.1 Schnell | Image generation model |
-| Hugging Face Router | Inference endpoint for FLUX |
-| LinkedIn API | Post publishing (image + caption) |
+Before you start, make sure you have:
 
----
-
-## Prerequisites
-
-* n8n running locally (desktop install or Docker)
-* Ollama installed and running
-* Hugging Face API token (for inference)
-* LinkedIn developer app + OAuth credentials
+- [ ] **n8n** installed and running (self-hosted or n8n Cloud)
+- [ ] **Ollama** installed locally with Llama 3.2 pulled
+- [ ] A **HuggingFace** account with a free API token
+- [ ] A **LinkedIn Developer App** with OAuth 2.0 credentials
 
 ---
 
-## Important Notes (So It Works)
+## 📥 Step-by-Step Setup
 
-* The FLUX HTTP Request node must store the response as **binary** (PNG), otherwise the LinkedIn node can’t attach media.
-* The **binary property name** coming from the HTTP Request (often `data`) must match the LinkedIn node’s **Input Binary Field**.
-* Keep the image prompt “no text in image” to avoid ugly renders (logos/letters) in generated images.
+### Step 1 — Download the Workflow File
+
+1. Go to the **Google Drive link** in the YouTube video description
+2. Download the file: `05_Linkedin_Poster_CLEAN.json`
+3. Save it somewhere easy to find (Desktop or Downloads folder)
 
 ---
 
-## Step 1 — Run n8n
+### Step 2 — Import into n8n
 
-If you prefer npm:
+1. Open your n8n instance in the browser
+2. Click **+** (top right) to create a new workflow
+3. Click the **⋮ menu** → **Import from File**
+4. Select the downloaded `05_Linkedin_Poster_CLEAN.json`
+5. The full workflow will load with all nodes pre-configured
 
-```bash
-npm install n8n -g
-n8n
+---
+
+### Step 3 — Connect Your Ollama Account
+
+1. Click the **Text Generation** node
+2. Under Credentials → click **Create New** → **Ollama API**
+3. Enter your Ollama base URL (default: `http://localhost:11434`)
+4. Save and repeat for the **Image Prompt Generation** node
+
+> Make sure Ollama is running with: `ollama serve`  
+> Pull the model if you haven't: `ollama pull llama3.2`
+
+---
+
+### Step 4 — Add Your HuggingFace API Token
+
+1. Click the **Image Generator** node (HTTP Request)
+2. Find the `Authorization` header field
+3. Replace `YOUR_HUGGINGFACE_API_TOKEN` with your actual token
+4. Get your token at: [huggingface.co/settings/tokens](https://huggingface.co/settings/tokens)
+
+> The free tier is enough — just make sure the token has **Read** access.
+
+---
+
+### Step 5 — Connect Your LinkedIn Account
+
+1. Click the **Create a Post** node
+2. Under Credentials → click **Connect LinkedIn OAuth2**
+3. A browser popup will appear — log in and authorize
+4. Once connected, your LinkedIn name will appear in the node
+5. Update the `person` field with your **LinkedIn Person URN** if needed
+
+---
+
+### Step 6 — Add Your Personal Bio
+
+1. Click the **Edit Fields** node
+2. Find the field named **My Description**
+3. Replace the placeholder text with **your own professional bio**
+
+> This is the most important step. The AI uses your bio to tailor every post to your personal brand, tone, and expertise. The more detail you provide, the better the output.
+
+---
+
+### Step 7 — Activate & Test
+
+1. Click the **Active** toggle (top right) to enable the workflow
+2. Open the **Chat widget URL** shown in the Chat Trigger node
+3. Type a post idea, for example:
+
+   > *"Why AI will not replace creative marketers"*
+
+4. Wait 20–40 seconds while the AI generates text + image
+5. Check your LinkedIn profile — the post should be live! ✅
+
+---
+
+## 🧩 Node Reference
+
+| Node | Type | Purpose |
+|------|------|---------|
+| When chat message received | Chat Trigger | Entry point — receives your post idea |
+| Edit Fields | Set Node | Injects your bio + post idea into variables |
+| Text Generation | Ollama (Llama 3.2) | Writes the LinkedIn post copy |
+| Image Prompt Generation | Ollama (Llama 3.2) | Creates a visual concept prompt |
+| Image Generator | HTTP Request | Calls FLUX.1 API to generate the image |
+| Merge | Merge Node | Combines generated text + image |
+| Create a Post | LinkedIn Node | Publishes the final post to LinkedIn |
+
+---
+
+## 🔧 Troubleshooting
+
+| Issue | Fix |
+|-------|-----|
+| Ollama not connecting | Run `ollama serve` and verify URL is `http://localhost:11434` |
+| HuggingFace 401 error | Regenerate your token and check it has inference permissions |
+| LinkedIn post not appearing | Re-authenticate LinkedIn OAuth — tokens expire after a few weeks |
+| Image generation timeout | FLUX.1 can be slow on cold starts — wait 30s and retry |
+| Post is too long / too short | Edit the prompt inside the Text Generation node |
+
+---
+
+## 📁 Files in This Download
+
+```
+📦 LinkedIn Auto-Poster
+ ├── 05_Linkedin_Poster_CLEAN.json   ← Import this into n8n
+ └── README.md                       ← This file
 ```
 
-Or run n8n via Docker (common for production).
+---
+
+## ⚠️ Important Notes
+
+- **Never share your workflow JSON with credentials filled in** — always export a clean version
+- The HuggingFace free tier has rate limits — for heavy use, consider the Pro tier
+- LinkedIn OAuth tokens expire periodically — reconnect if posting stops working
+- This workflow runs the LLM **locally** via Ollama — your post ideas never leave your machine
 
 ---
 
-## Step 2 — Setup Ollama (Local LLM)
+## 📺 Watch the Full Tutorial
 
-1. Install Ollama
-2. Pull a model (example):
+Follow along step-by-step on YouTube — link in the video description.
 
-```bash
-ollama pull llama3
-```
-
-3. Ensure Ollama is running locally (so n8n can call it)
+If this helped you, **leave a like and subscribe** — it helps a lot! 🙏
 
 ---
 
-## Step 3 — Setup FLUX 1.1 Schnell (Image Generation)
-
-This workflow uses a Hugging Face inference endpoint:
-
-* Endpoint:
-  * `https://router.huggingface.co/hf-inference/models/black-forest-labs/FLUX.1-schnell`
-* Auth header:
-  * `Authorization: Bearer YOUR_TOKEN`
-
-In n8n, use an **HTTP Request** node to call the endpoint with the prompt from `{{$json.image_prompt}}`, and make sure the response is stored as **binary** (PNG).
-
----
-
-## Step 4 — Setup LinkedIn API (Publishing)
-
-1. Create a LinkedIn Developer app
-2. Add the product: **Share on LinkedIn**
-3. Set OAuth redirect URL:
-
-```
-http://localhost:5678/rest/oauth2-credential/callback
-```
-
-4. In n8n, connect LinkedIn using OAuth2 credentials
-
-**Note**: Posting as an organization/company page typically requires special approval. This flow is intended for posting as a personal profile.
-
----
-
-## Step 5 — n8n Node Configuration Notes (What Matters)
-
-### Merge node
-
-Use Merge in:
-
-| Setting | Value |
-| --- | --- |
-| Mode | Combine |
-| Combine By | Position |
-
-This produces a single item that contains:
-
-* JSON fields (like `content`)
-* Binary image data (PNG)
-
-### LinkedIn node
-
-Typical settings:
-
-| Field | Value |
-| --- | --- |
-| Resource | Post |
-| Operation | Create |
-| Post As | Person |
-| Media Category | Image |
-| Input Binary Field | `data` *(or the name you used in the HTTP node)* |
-| Text | `{{$json.content}}` |
-
----
-
-## Example Use Case
-
-Input:
-
-* Post idea: How AI is transforming content marketing
-* Company/context: AI automation builder
-
-Output:
-
-* LinkedIn-ready post caption (generated by Ollama)
-* Symbolic/corporate image (generated by FLUX)
-* Published LinkedIn post (caption + image)
-
----
-
-## Limitations
-
-* LinkedIn organization posting may require additional permissions/approval
-* Image size and format must meet LinkedIn’s limits
-* API rate limits can apply (LinkedIn and Hugging Face)
-
----
-
-## Future Improvements
-
-* Post scheduling
-* Approval workflow before publishing
-* Hashtag optimization
-* Auto first comment
-* Analytics tracking
-* Multi-platform posting (X/Twitter, Instagram, etc.)
-* Carousel generation
-
----
-
-## Demo
-
-If you add a demo video, place it in this folder and link it here (recommended).
-
----
-
-## Final Thought
-
-This is not about replacing creativity — it’s about removing repetitive friction:
-
-* Think → enter the idea → automation publishes
-
----
-
-## Result
-
-You end up with a repeatable content engine where you only provide the idea, and the workflow produces and publishes a complete LinkedIn post (caption + image) automatically.
+*Built with n8n · Ollama · HuggingFace FLUX.1 · LinkedIn API*
