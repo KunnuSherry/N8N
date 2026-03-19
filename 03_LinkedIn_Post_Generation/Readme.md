@@ -7,6 +7,8 @@
 ![HuggingFace](https://img.shields.io/badge/HuggingFace-FLUX.1-teal?style=flat-square)
 ![LinkedIn](https://img.shields.io/badge/LinkedIn-API-blue?style=flat-square)
 
+![Workflow Image](image.png)
+
 ---
 
 ## 📌 What This Does
@@ -65,8 +67,8 @@ Before you start, make sure you have:
 
 ### Step 1 — Download the Workflow File
 
-1. Go to the **Google Drive link** in the YouTube video description
-2. Download the file: `05_Linkedin_Poster_CLEAN.json`
+1. Go to the [**Google Drive link**](https://drive.google.com/file/d/12-KWOAuAjhVAfbMo4EkA3Vsr3Ex6AO6d/view?usp=drive_link)
+2. Download the file: `05_Linkedin_Poster.json`
 3. Save it somewhere easy to find (Desktop or Downloads folder)
 
 ---
@@ -76,7 +78,7 @@ Before you start, make sure you have:
 1. Open your n8n instance in the browser
 2. Click **+** (top right) to create a new workflow
 3. Click the **⋮ menu** → **Import from File**
-4. Select the downloaded `05_Linkedin_Poster_CLEAN.json`
+4. Select the downloaded `05_Linkedin_Poster.json`
 5. The full workflow will load with all nodes pre-configured
 
 ---
@@ -168,6 +170,8 @@ Before you start, make sure you have:
 ```
 📦 LinkedIn Auto-Poster
  ├── 05_Linkedin_Poster_CLEAN.json   ← Import this into n8n
+ └── README.md                       ← This file
+ ├── image.png                       ← Workflow image
  └── README.md                       ← This file
 ```
 
